@@ -63,6 +63,7 @@ The system includes several visualization tools:
 
 ## Demo
 Here are demo videos showcasing the application in action:
+> **_NOTE:_** Github does not support video previews. The videos can be found in the results folder, or after you pull the repository it will be shown in the README.
 
 ### Straight Navigation Demo
 <video width="600" controls>
