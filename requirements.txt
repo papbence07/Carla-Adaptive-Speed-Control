@@ -1,0 +1,8 @@
+carla==0.9.15
+numpy
+pandas
+matplotlib
+pillow
+scipy
+opencv-python
+ultralytics
