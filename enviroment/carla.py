@@ -1,4 +1,6 @@
+import csv
 import carla
+import numpy as np
 
 
 def setup_carla():
@@ -22,6 +24,20 @@ def setup_carla():
     camera = world.spawn_actor(camera_bp, camera_transform, attach_to=vehicle)
 
     return world, vehicle, camera
+
+
+def load_waypoints(csv_path):
+    """
+    Reads waypoints from a CSV file.
+    """
+    waypoints = []
+    with open(csv_path, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  
+        for row in reader:
+            x, y = map(float, row)
+            waypoints.append([x, y])
+    return np.array(waypoints)
 
 
 def get_speed(vehicle):

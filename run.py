@@ -8,7 +8,8 @@ from datetime import datetime
 from controllers.pid import PID
 from detector.detector import Detector
 from enviroment.data_logger import DataLogger
-from enviroment.carla import setup_carla, get_speed
+from controllers.stanley import StanleyController
+from enviroment.carla import setup_carla, load_waypoints, get_speed
 
 
 def main():
@@ -16,6 +17,7 @@ def main():
     model_path = ""
     detector = Detector(model_path)
     pid = PID(kp=0.4, ki=0.5, kd=0.05, dt=0.2)
+    lateral_controller = StanleyController(wheelbase=2.5, default_speed=target_speed, mu=0.3, k=0.01)
 
     results_name = datetime.today().strftime('%Y_%m_%d_%H%M%S')
     output_dir = os.path.join("results", results_name)
@@ -32,6 +34,9 @@ def main():
 
     frame_counter = 0
     world, vehicle, camera = setup_carla()
+
+    csv_path = "reference_trajectory_straight.csv"
+    trajectory_points = load_waypoints(csv_path)
 
     last_position = None 
    
@@ -53,12 +58,15 @@ def main():
 
             if cls_name == "traffic_sign_30":
                 target_speed = 25 / 3.6
+                lateral_controller.update_default_speed(target_speed)
                 zone_speed = target_speed
             elif cls_name == "traffic_sign_60":
                 target_speed = 55 / 3.6
+                lateral_controller.update_default_speed(target_speed)
                 zone_speed = target_speed
             elif cls_name == "traffic_sign_90":
                 target_speed = 85 / 3.6
+                lateral_controller.update_default_speed(target_speed)
                 zone_speed = target_speed
             elif cls_name == "traffic_light_red":
                 target_speed = 0
@@ -77,14 +85,18 @@ def main():
 
         location = vehicle.get_location()
         velocity = vehicle.get_velocity()
+        yaw = np.radians(vehicle.get_transform().rotation.yaw)
         speed = np.sqrt(velocity.x**2 + velocity.y**2)
 
-        accel_pid = pid.compute(target_speed, speed)
+        steer, adjusted_speed = lateral_controller.stanley_control(vehicle.get_location(), yaw, trajectory_points, speed, target_speed)
+        accel_pid = pid.compute(adjusted_speed, speed)
+
         accel = accel_pid
         if stop:
             accel = -2.0
 
         control = carla.VehicleControl()
+        control.steer = steer
         if accel > 0:
             control.throttle = min(accel, 1.0)
             control.brake = 0.0
