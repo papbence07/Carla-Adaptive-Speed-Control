@@ -61,6 +61,27 @@ The system includes several visualization tools:
 -   Trajectory visualization
 -   Real-time detection visualization
 
+## Demo
+Here are demo videos showcasing the application in action:
+
+### Straight Navigation Demo
+<video width="600" controls>
+  <source src="results/straight/straight.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<img src="results/straight/pid_plot.png" alt="Straight Navigation" width="600">
+
+### Curve Navigation Demo
+<video width="600" controls>
+  <source src="results/curve/curve.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<img src="results/curve/pid_plot_curve.png" alt="Curve Navigation" width="600">
+
+<img src="results/curve/trajectory_curves.png" alt="Curve Navigation" width="600">
+
 ## Creators
 -   Pap Bence - VEJP2J
 -   Csippán György - XIJHSN
